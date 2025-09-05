@@ -60,12 +60,13 @@ const CoursePage = ({ params }) => {
       const progressPercentage = isCompleted ? 100 : 0;
 
       return {
-        level: level.levelNumber,
+        level: level.level_number, // Use level_number from backend
+        levelNumber: level.level_number, // Also keep levelNumber for compatibility
         description: level.topic,
         status: progressPercentage,
-        title: level.levelTitle,
+        title: level.level_title, // Use level_title from backend
         difficulty: level.difficulty,
-        xpReward: level.xpReward,
+        xpReward: level.xp_reward, // Use xp_reward from backend
         isCompleted: isCompleted,
         userProgress: userProgress,
         assignments: level.assignments,
@@ -90,6 +91,7 @@ const CoursePage = ({ params }) => {
                 }}
                 className="w-full flex justify-center items-center cursor-pointer transform hover:scale-[1.02] transition-all duration-200"
               >
+                {console.log(idx.level)}
                 <Levelcard
                   description={idx.description}
                   status={idx.status}

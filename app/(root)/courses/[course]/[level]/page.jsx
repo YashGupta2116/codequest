@@ -2,6 +2,7 @@
 import React, { useState, use, useEffect } from "react";
 import { getLevelData, updateLevelProgress } from "@/actions/getLevelData";
 import { useRouter, useSearchParams } from "next/navigation";
+import CodeRunner from "@/components/CodeRunner";
 
 const LevelPage = ({ params }) => {
   const { course, level } = use(params);
@@ -17,6 +18,7 @@ const LevelPage = ({ params }) => {
 
   // Extract level number from level parameter (e.g., "level-1" -> 1)
   const levelNumber = level.replace("level-", "");
+  console.log('Level parameter:', level, 'Extracted level number:', levelNumber); // Debug log
 
   useEffect(() => {
     const fetchLevelData = async () => {
@@ -30,6 +32,7 @@ const LevelPage = ({ params }) => {
         );
         if (storedLevelData) {
           const parsedData = JSON.parse(storedLevelData);
+          console.log('Stored level data:', parsedData); // Debug log
           setLevelData(parsedData);
 
           // Set initial code if user has previous submission
@@ -38,6 +41,45 @@ const LevelPage = ({ params }) => {
           }
           setLoading(false);
           return;
+        }
+
+        // If no localStorage data, try to get from roadmap data
+        const roadmapData = localStorage.getItem(`roadmap:${course}`);
+        if (roadmapData) {
+          const parsedRoadmap = JSON.parse(roadmapData);
+          const level = parsedRoadmap.levels?.find(l => l.level_number === parseInt(levelNumber));
+          
+          if (level) {
+            const userProgress = level.userProgress?.[0];
+            const isCompleted = userProgress?.isCompleted || false;
+            
+            const levelData = {
+              ...level,
+              level: level.level_number, // Use level_number from backend
+              levelNumber: level.level_number, // Also keep levelNumber for compatibility
+              levelTitle: level.level_title, // Use level_title from backend
+              xpReward: level.xp_reward, // Use xp_reward from backend
+              isCompleted,
+              xpEarned: userProgress?.xpEarned || 0,
+              userProgress: userProgress,
+              roadmapInfo: {
+                language: parsedRoadmap.language || course,
+                title: parsedRoadmap.title || `${course} Roadmap`,
+                description: parsedRoadmap.description || `Learn ${course} step by step`,
+              },
+              userTotalXp: parsedRoadmap.userTotalXp || 0,
+            };
+            
+            setLevelData(levelData);
+            console.log('Level data set:', levelData); // Debug log
+            
+            // Set initial code if user has previous submission
+            if (userProgress?.codeSubmitted) {
+              setUserCode(userProgress.codeSubmitted);
+            }
+            setLoading(false);
+            return;
+          }
         }
 
         // Fallback to fetching from database
@@ -167,7 +209,7 @@ const LevelPage = ({ params }) => {
               </div>
             </div>
             <p className="text-slate-400 text-sm">
-              Level {levelData.level || levelData.levelNumber} •{" "}
+              Level {levelData.level || levelData.levelNumber || levelNumber} •{" "}
               {levelData.description || levelData.topic}
             </p>
             {levelData.isCompleted && (
@@ -305,95 +347,9 @@ const LevelPage = ({ params }) => {
           </div>
         </div>
 
-        {/* Right Panel - Assignment and Code Editor */}
-        <div className="w-[49%] h-[96%] bg-gradient-to-b from-[#1e293b]/80 to-[#0f172a]/80 backdrop-blur-md border border-slate-600/50 rounded-2xl shadow-2xl flex flex-col overflow-hidden">
-          {/* Assignment Header */}
-          {levelData.assignments && levelData.assignments.length > 0 && (
-            <div className="p-6 border-b border-slate-600/30">
-              <h2 className="text-xl font-bold text-white mb-2">
-                Assignment {selectedAssignment + 1}:{" "}
-                {levelData.assignments[selectedAssignment].title}
-              </h2>
-              <p className="text-slate-300 text-sm mb-4">
-                {levelData.assignments[selectedAssignment].description}
-              </p>
-
-              {/* Sample Input/Output */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {levelData.assignments[selectedAssignment].sampleInput && (
-                  <div className="bg-slate-800/50 rounded-lg p-3">
-                    <h4 className="text-slate-400 text-xs font-medium mb-2">
-                      Sample Input:
-                    </h4>
-                    <code className="text-green-400 text-sm font-mono">
-                      {levelData.assignments[selectedAssignment].sampleInput}
-                    </code>
-                  </div>
-                )}
-                {levelData.assignments[selectedAssignment].sampleOutput && (
-                  <div className="bg-slate-800/50 rounded-lg p-3">
-                    <h4 className="text-slate-400 text-xs font-medium mb-2">
-                      Expected Output:
-                    </h4>
-                    <code className="text-blue-400 text-sm font-mono">
-                      {levelData.assignments[selectedAssignment].sampleOutput}
-                    </code>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* Code Editor */}
-          <div className="flex-1 flex flex-col p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-slate-200 font-semibold">Code Editor</h3>
-              <div className="text-xs text-slate-400">
-                Language: {levelData.roadmapInfo?.language || course}
-              </div>
-            </div>
-
-            <textarea
-              value={userCode}
-              onChange={(e) => setUserCode(e.target.value)}
-              placeholder={`Write your ${
-                levelData.roadmapInfo?.language || course
-              } code here...`}
-              className="flex-1 w-full bg-slate-900/50 border border-slate-600/30 rounded-lg p-4 text-slate-200 font-mono text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50"
-            />
-
-            {/* Submission Result */}
-            {submissionResult && (
-              <div
-                className={`mt-4 p-3 rounded-lg border ${
-                  submissionResult.success
-                    ? "bg-green-500/10 border-green-500/30 text-green-400"
-                    : "bg-red-500/10 border-red-500/30 text-red-400"
-                }`}
-              >
-                {submissionResult.message}
-              </div>
-            )}
-
-            {/* Submit Button */}
-            <button
-              onClick={handleCodeSubmission}
-              disabled={isSubmitting || !userCode.trim()}
-              className={`mt-4 w-full py-3 rounded-lg font-semibold transition-all duration-200 ${
-                isSubmitting || !userCode.trim()
-                  ? "bg-slate-700 text-slate-400 cursor-not-allowed"
-                  : levelData.isCompleted
-                  ? "bg-green-600 hover:bg-green-700 text-white"
-                  : "bg-blue-600 hover:bg-blue-700 text-white active:scale-95"
-              }`}
-            >
-              {isSubmitting
-                ? "Submitting..."
-                : levelData.isCompleted
-                ? "Update Solution"
-                : "Submit Code"}
-            </button>
-          </div>
+        {/* Right Panel - Code Runner */}
+        <div className="w-[49%] h-[96%] bg-gradient-to-b from-[#1e293b]/80 to-[#0f172a]/80 backdrop-blur-md border border-slate-600/50 rounded-2xl shadow-2xl">
+          <CodeRunner course={course} />
         </div>
       </div>
     </div>
