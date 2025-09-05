@@ -79,25 +79,25 @@ export function SignIn() {
     };
 
     return (
-        <div className="min-h-screen w-full bg-gradient-to-br from-[#0F2027] via-[#2C5364] to-[#2C5364] flex justify-center items-center p-4 relative overflow-hidden">
+        <div className="min-h-screen w-full bg-gradient-to-br from-gray-950 via-slate-900 to-gray-950 flex justify-center items-center p-4 relative overflow-hidden">
             {/* Subtle background elements */}
-            <div className="absolute inset-0 overflow-hidden">
+            <div className="absolute inset-0 overflow-hidden z-0">
                 <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-600/5 rounded-full blur-3xl"></div>
                 <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-indigo-600/5 rounded-full blur-3xl"></div>
                 <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-slate-600/3 rounded-full blur-3xl"></div>
             </div>
 
             {/* Minimal floating icons */}
-            <div className="absolute top-20 left-20 text-slate-700/30">
+            <div className="absolute top-20 left-20 text-slate-300/20 z-10 pointer-events-none" aria-hidden>
                 <Code2 size={24} />
             </div>
-            <div className="absolute top-32 right-32 text-slate-700/30">
+            <div className="absolute top-32 right-32 text-slate-300/20 z-10 pointer-events-none" aria-hidden>
                 <Gamepad2 size={20} />
             </div>
-            <div className="absolute bottom-32 left-32 text-slate-700/30">
+            <div className="absolute bottom-32 left-32 text-slate-300/20 z-10 pointer-events-none" aria-hidden>
                 <Trophy size={22} />
             </div>
-            <div className="absolute bottom-20 right-20 text-slate-700/30">
+            <div className="absolute bottom-20 right-20 text-slate-300/20 z-10 pointer-events-none" aria-hidden>
                 <Zap size={18} />
             </div>
 
