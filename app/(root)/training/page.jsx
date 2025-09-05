@@ -97,7 +97,7 @@ const TrainingGrounds = () => {
   const currentLang = languages.find(lang => lang.id === selectedLanguage);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0F2027] via-[#2C5364] to-[#2C5364] text-white">
+    <div className="min-h-screen bg-gradient-to-br from-[#0F2027] via-[#2C5364] to-[#2C5364] text-white pt-20">
       <Navbar />
       
       <div className="max-w-7xl mx-auto px-6 py-8">
