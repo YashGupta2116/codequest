@@ -7,6 +7,7 @@ import {
   useScroll,
   useMotionValueEvent,
 } from "motion/react";
+import { useRouter } from "next/navigation";
 
 import React, { useRef, useState } from "react";
 
@@ -91,19 +92,26 @@ export const NavItems = ({
         className
       )}>
       {items.map((item, idx) => (
-        <a
-          onMouseEnter={() => setHovered(idx)}
-          onClick={onItemClick}
-          className="relative px-4 py-2 text-neutral-600 dark:text-neutral-300"
+        <button
           key={`link-${idx}`}
-          href={item.link}>
+          onMouseEnter={() => setHovered(idx)}
+          onClick={() => {
+            if (item.onClick) {
+              item.onClick();
+            }
+            if (onItemClick) {
+              onItemClick(item);
+            }
+          }}
+          className={`relative px-4 py-2 ${hovered===idx ? 'text-neutral-600':'text-slate-100'} dark:text-neutral-300 cursor-pointer bg-transparent border-none`}
+        >
           {hovered === idx && (
             <motion.div
               layoutId="hovered"
               className="absolute inset-0 h-full w-full rounded-full bg-gray-100 dark:bg-neutral-800" />
           )}
           <span className="relative z-20">{item.name}</span>
-        </a>
+        </button>
       ))}
     </motion.div>
   );
@@ -190,17 +198,20 @@ export const MobileNavToggle = ({
 };
 
 export const NavbarLogo = () => {
+  const router = useRouter()
   return (
-    <a
-      href="#"
+    <div
+      onClick={()=>{
+        router.push('/dashboard')
+      }}
       className="relative z-20 mr-4 flex items-center space-x-2 px-2 py-1 text-sm font-normal text-black">
       <img
         src="https://assets.aceternity.com/logo-dark.png"
         alt="logo"
         width={30}
         height={30} />
-      <span className="font-medium text-black dark:text-white">Startup</span>
-    </a>
+      <span className="text-slate-100 font-semibold text-2xl dark:text-white">CodeQuest</span>
+    </div>
   );
 };
 
@@ -213,7 +224,7 @@ export const NavbarButton = ({
   ...props
 }) => {
   const baseStyles =
-    "px-4 py-2 rounded-md bg-white button bg-white text-black text-sm font-bold relative cursor-pointer hover:-translate-y-0.5 transition duration-200 inline-block text-center";
+    "px-4 py-2 rounded-md bg-white button bg-white text-slate-100 text-sm font-bold relative cursor-pointer hover:-translate-y-0.5 transition duration-200 inline-block text-center";
 
   const variantStyles = {
     primary:
@@ -221,7 +232,7 @@ export const NavbarButton = ({
     secondary: "bg-transparent shadow-none dark:text-white",
     dark: "bg-black text-white shadow-[0_0_24px_rgba(34,_42,_53,_0.06),_0_1px_1px_rgba(0,_0,_0,_0.05),_0_0_0_1px_rgba(34,_42,_53,_0.04),_0_0_4px_rgba(34,_42,_53,_0.08),_0_16px_68px_rgba(47,_48,_55,_0.05),_0_1px_0_rgba(255,_255,_255,_0.1)_inset]",
     gradient:
-      "bg-gradient-to-b from-blue-500 to-blue-700 text-white shadow-[0px_2px_0px_0px_rgba(255,255,255,0.3)_inset]",
+      "bg-gradient-to-r from-gray-900 via-gray-800 to-black text-white shadow-[0px_2px_0px_0px_rgba(255,255,255,0.3)_inset]",
   };
 
   return (
