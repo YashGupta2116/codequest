@@ -1,0 +1,161 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id            String          @id @default(cuid())
+  fullName      String
+  username      String
+  email         String          @unique
+  emailVerified DateTime?
+  image         String?
+  passwordHash      String?         // For credentials authentication
+  // Add role for authorization
+  role          String          @default("user") // user, admin, etc.
+
+  accounts      Account[]
+  sessions      Session[]
+  // Optional for WebAuthn support
+  Authenticator Authenticator[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+model Account {
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@id([identifier, token])
+  @@map("verification_tokens")
+}
+
+// Optional for WebAuthn support
+model Authenticator {
+  credentialID         String  @unique
+  userId               String
+  providerAccountId    String
+  credentialPublicKey  String
+  counter              Int
+  credentialDeviceType String
+  credentialBackedUp   Boolean
+  transports           String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, credentialID])
+  @@map("authenticators")
+}
+
+model Language {
+  id       Int     @id @default(autoincrement())
+  name     String  @unique
+  levels   Level[]
+}
+
+model Level {
+  id          Int       @id @default(autoincrement())
+  levelNumber Int
+  title       String
+  topic       String
+  difficulty  String
+  xpReward    Int
+  textContent String
+
+  language   Language @relation(fields: [languageId], references: [id])
+  languageId Int
+
+  assignments Assignment[]
+  miniBoss    MiniBoss?
+  quiz        Quiz[]
+  bigBoss     BigBoss? // only if levelNumber % 5 == 0
+}
+
+model Assignment {
+  id          Int    @id @default(autoincrement())
+  title       String
+  description String
+  sampleInput String
+  sampleOutput String
+
+  level   Level @relation(fields: [levelId], references: [id])
+  levelId Int
+}
+
+model MiniBoss {
+  id          Int    @id @default(autoincrement())
+  title       String
+  description String
+  requirements String[]
+
+  level   Level @relation(fields: [levelId], references: [id])
+  levelId Int  @unique
+}
+
+model Quiz {
+  id       Int    @id @default(autoincrement())
+  question String
+  options  String[]
+  answer   String
+
+  level   Level @relation(fields: [levelId], references: [id])
+  levelId Int
+}
+
+model BigBoss {
+  id          Int    @id @default(autoincrement())
+  title       String
+  description String
+  requirements String[]
+
+  level   Level @relation(fields: [levelId], references: [id])
+  levelId Int  @unique
+}
