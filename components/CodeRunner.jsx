@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Editor from "@monaco-editor/react";
 import { validateCodeWithGemini } from "@/actions/validateCodeWithGemini";
+import Toaster from "./Toaster";
 
 const LANGS = [
   {
@@ -177,7 +178,8 @@ export default function CodeRunner({
   const [output, setOutput] = useState("Run code to see output...");
   const [running, setRunning] = useState(false);
   const [isValidating, setIsValidating] = useState(false);
-  const [validationResult, setValidationResult] = useState(null);
+  const [toasterMessage, setToasterMessage] = useState("");
+  const [toasterType, setToasterType] = useState("success");
 
   // Update language when course title changes
   useEffect(() => {
@@ -186,7 +188,7 @@ export default function CodeRunner({
     setCode(newLang.template);
     setOutput("Run code to see output...");
     setStdin("");
-    setValidationResult(null);
+    setToasterMessage("");
   }, [title]);
 
   // For now, simulate run
@@ -214,25 +216,18 @@ export default function CodeRunner({
   // Validate code with Gemini
   const validateCode = async () => {
     if (!code.trim()) {
-      setValidationResult({
-        success: false,
-        message: "Please write some code before submitting!",
-        hint: "Start by writing some basic code to solve the assignment.",
-      });
+      setToasterMessage("Please write some code before submitting!");
+      setToasterType("error");
       return;
     }
 
     if (!assignment) {
-      setValidationResult({
-        success: false,
-        message: "No assignment selected for validation",
-        hint: "Please select an assignment to work on.",
-      });
+      setToasterMessage("No assignment selected for validation");
+      setToasterType("error");
       return;
     }
 
     setIsValidating(true);
-    setValidationResult(null);
 
     try {
       console.log(
@@ -246,7 +241,17 @@ export default function CodeRunner({
         assignment,
         levelTitle
       );
-      setValidationResult(result);
+
+      // Show toaster based on result
+      if (result.success) {
+        setToasterMessage(result.message);
+        setToasterType("success");
+      } else {
+        setToasterMessage(
+          result.message + (result.hint ? ` 💡 ${result.hint}` : "")
+        );
+        setToasterType("error");
+      }
 
       // Call parent callback if provided
       if (onValidationResult) {
@@ -257,11 +262,8 @@ export default function CodeRunner({
       }
     } catch (error) {
       console.error("❌ Validation error:", error);
-      setValidationResult({
-        success: false,
-        message: "Failed to validate code. Please try again.",
-        hint: "Check your code for syntax errors and make sure it addresses the assignment.",
-      });
+      setToasterMessage("Failed to validate code. Please try again.");
+      setToasterType("error");
     } finally {
       setIsValidating(false);
     }
@@ -313,35 +315,12 @@ export default function CodeRunner({
         />
       </div>
 
-      {/* Validation Result */}
-      {validationResult && (
-        <div
-          className={`mb-3 p-3 rounded-lg border ${
-            validationResult.success
-              ? "bg-green-500/10 border-green-500/30"
-              : "bg-red-500/10 border-red-500/30"
-          }`}
-        >
-          <div className="flex items-center mb-2">
-            <span
-              className={`text-sm font-semibold ${
-                validationResult.success ? "text-green-400" : "text-red-400"
-              }`}
-            >
-              {validationResult.success ? "✅ Success!" : "❌ Try Again"}
-            </span>
-          </div>
-          <p className="text-slate-300 text-sm mb-2">
-            {validationResult.message}
-          </p>
-          {validationResult.hint && (
-            <div className="text-xs">
-              <span className="text-slate-400">💡 Hint:</span>
-              <p className="text-yellow-400 mt-1">{validationResult.hint}</p>
-            </div>
-          )}
-        </div>
-      )}
+      {/* Toaster */}
+      <Toaster
+        message={toasterMessage}
+        type={toasterType}
+        onClose={() => setToasterMessage("")}
+      />
 
       {/* Stdin & Terminal */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
