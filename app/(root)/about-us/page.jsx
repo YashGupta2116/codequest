@@ -59,25 +59,19 @@ const team = [
 
 const AboutPage = () => {
     return (
-        <div className=" flex justify-center items-center flex-col min-h-screen w-full max-w-full overflow-x-hidden bg-gradient-to-br from-[#0F2027] via-[#2C5364] to-[#2C5364] text-white">
-            {/* Navbar */}
+        <div className=" flex justify-center items-center flex-col min-h-screen w-full max-w-full overflow-x-hidden bg-gradient-to-br from-[#0F2027] via-[#2C5364] to-[#2C5364] text-white pt-20">
             <Navbar />
-            
-            {/* Main Content Container */}
             <div className="flex items-start justify-center px-4 py-6 w-[90%] max-w-full">
-                {/* Dark Glass Container */}
                 <motion.div
                     initial={{ opacity: 0, scale: 0.98 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.6 }}
                     className="w-full max-w-[calc(100vw-2rem)] bg-[#0F2027]/70 backdrop-blur-xl rounded-3xl shadow-[0_0_50px_rgba(0,0,0,0.6)] border border-white/5 p-6 relative overflow-hidden"
                 >
-                    {/* Glow Background */}
                     <div className="absolute -top-28 -left-28 w-96 h-96 bg-cyan-500/10 rounded-full blur-[180px]"></div>
                     <div className="absolute -bottom-28 -right-28 w-96 h-96 bg-purple-500/10 rounded-full blur-[180px]"></div>
                     
                     <div className="relative z-10">
-                        {/* Heading */}
                         <motion.h1
                             initial={{ y: -30, opacity: 0 }}
                             animate={{ y: 0, opacity: 1 }}
@@ -86,8 +80,6 @@ const AboutPage = () => {
                         >
                             About CodeQuest
                         </motion.h1>
-                        
-                        {/* Paragraph */}
                         <motion.p
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
@@ -103,8 +95,6 @@ const AboutPage = () => {
                             coders, CodeQuest keeps curiosity alive and makes coding feel like
                             an epic quest. 🚀
                         </motion.p>
-                        
-                        {/* Features */}
                         <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-5">
                             {features.map((feature, index) => (
                                 <motion.div
@@ -124,8 +114,6 @@ const AboutPage = () => {
                                 </motion.div>
                             ))}
                         </div>
-                        
-                        {/* Team Section */}
                         <motion.div
                             initial={{ opacity: 0, y: 30 }}
                             whileInView={{ opacity: 1, y: 0 }}
@@ -147,7 +135,6 @@ const AboutPage = () => {
                                         className="bg-[#1A2A33]/80 border border-white/5 rounded-2xl p-4 backdrop-blur-md shadow-[0_0_20px_rgba(0,0,0,0.4)] transition-all duration-150 hover:shadow-[0_0_30px_rgba(0,255,255,0.1)] hover:border-cyan-500/20"
                                     >
                                         <div className="flex items-center gap-4">
-                                            {/* Photo Placeholder */}
                                             <div className="flex-shrink-0">
                                                 {member.image ? (
                                                     <img
@@ -163,15 +150,11 @@ const AboutPage = () => {
                                                     </div>
                                                 )}
                                             </div>
-                                            
-                                            {/* Content */}
                                             <div className="text-left flex-grow">
                                                 <h3 className="text-base md:text-lg font-semibold text-cyan-300 mb-1">
                                                     {member.name}
                                                 </h3>
                                                 <p className="text-gray-400 text-sm mb-2">{member.role}</p>
-                                                
-                                                {/* Social Icons */}
                                                 <div className="flex gap-3">
                                                     <a 
                                                         href={member.socials.discord} 
