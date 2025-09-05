@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { FaCrown, FaChevronUp, FaSearch } from "react-icons/fa";
 import { BsTrophyFill } from "react-icons/bs";
 
-// Example Leaderboard Data (replace with your API/data)
+
 const leaderboard = [
   {
     name: "Rohit Sharma",
@@ -51,9 +51,9 @@ const leaderboard = [
 ];
 
 const trophyGradients = [
-  "from-amber-400 via-orange-400 to-yellow-300", // 1st
-  "from-slate-400 via-blue-400 to-cyan-200", // 2nd
-  "from-yellow-700 via-amber-600 to-amber-400", // 3rd
+  "from-amber-400 via-orange-400 to-yellow-300",
+  "from-slate-400 via-blue-400 to-cyan-200",
+  "from-green-300 via-green-400 to-green-400", 
 ];
 
 export default function LeaderBoardPage() {
@@ -67,7 +67,7 @@ export default function LeaderBoardPage() {
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-[#0F2027] via-[#2C5364] to-[#2C5364] text-white font-sans overflow-x-hidden flex flex-col">
 
-      {/* Header */}
+      
       <header className="w-full mt-20 py-14 text-center">
         <motion.h1
           initial={{ opacity: 0, y: 40 }}
@@ -82,7 +82,7 @@ export default function LeaderBoardPage() {
         </div>
       </header>
       
-      {/* Search Bar */}
+      
       <div className="flex items-center justify-center mt-2 mb-12">
         <div className="flex items-center bg-[#182b39] rounded-full px-5 py-3 w-full max-w-md shadow-inner ring-1 ring-blue-800/20">
           <FaSearch className="mr-3 text-cyan-400 text-lg" />
@@ -96,7 +96,7 @@ export default function LeaderBoardPage() {
         </div>
       </div>
 
-      {/* Podium Section */}
+      
       <section className="mx-auto mb-20 flex items-end justify-center gap-8 max-w-4xl w-full px-8">
         {[1, 0, 2].map((idx, order) => {
           const user = filteredLeaderboard[idx];
@@ -116,7 +116,7 @@ export default function LeaderBoardPage() {
                 marginBottom: order === 1 ? 0 : 50,
               }}
             >
-              {/* Avatar */}
+              
               <div className={`w-20 h-20 rounded-full border-4 ${order === 1 ? "border-white" : "border-slate-200"} overflow-hidden bg-white mb-2`}>
                 <img
                   src={user.avatar}
@@ -124,7 +124,7 @@ export default function LeaderBoardPage() {
                   alt={user.name}
                 />
               </div>
-              {/* Name & Crown */}
+              
               <div className="flex items-center gap-1">
                 <span className={`text-lg font-bold ${idx === 0 ? "text-yellow-300" : idx === 1 ? "text-gray-200" : "text-amber-600"}`}>
                   {user.name.split(" ")[0]}
@@ -144,7 +144,7 @@ export default function LeaderBoardPage() {
         })}
       </section>
 
-      {/* Main Table */}
+      
       <section className="flex-1 w-full max-w-5xl mx-auto px-3 pb-20">
         <div className="rounded-2xl overflow-hidden shadow-xl bg-[#1C293A]/80">
           <table className="w-full text-left">
@@ -189,11 +189,6 @@ export default function LeaderBoardPage() {
           </table>
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="py-10 border-t border-slate-800 bg-[#172030]/60 text-center text-slate-400 text-sm font-medium tracking-wide">
-        © 2025 CodeQuest by Package.Json Team.
-      </footer>
     </div>
   );
 }
