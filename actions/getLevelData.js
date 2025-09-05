@@ -17,12 +17,24 @@ export async function getLevelData(language, levelNumber) {
     }
 
     // First get the roadmap
+    // Get roadmap by language (case-insensitive search)
     const roadmap = await prisma.roadmap.findFirst({
-      where: { language },
-      select: { id: true, title: true, description: true }
+      where: {
+        language: {
+          equals: language,
+          mode: "insensitive",
+        },
+      },
+      select: { id: true, title: true, description: true },
     });
 
     if (!roadmap) {
+      console.log("🔍 Roadmap not found for language:", language);
+      console.log("🔍 Available roadmaps:");
+      const allRoadmaps = await prisma.roadmap.findMany({
+        select: { language: true, title: true },
+      });
+      console.log(allRoadmaps);
       throw new Error("Roadmap not found");
     }
 
@@ -30,25 +42,25 @@ export async function getLevelData(language, levelNumber) {
     const level = await prisma.level.findFirst({
       where: {
         roadmapId: roadmap.id,
-        levelNumber: parseInt(levelNumber)
+        levelNumber: parseInt(levelNumber),
       },
       include: {
         assignments: {
-          orderBy: { createdAt: "asc" }
+          orderBy: { createdAt: "asc" },
         },
         miniBoss: true,
         bigBoss: true,
         userProgress: {
-          where: { userId: session.user.id }
+          where: { userId: session.user.id },
         },
         roadmap: {
           select: {
             language: true,
             title: true,
-            description: true
-          }
-        }
-      }
+            description: true,
+          },
+        },
+      },
     });
 
     if (!level) {
@@ -58,30 +70,30 @@ export async function getLevelData(language, levelNumber) {
     // Get user's total XP
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },
-      select: { totalXp: true }
+      select: { totalXp: true },
     });
 
     // Get adjacent levels for navigation
     const previousLevel = await prisma.level.findFirst({
       where: {
         roadmapId: roadmap.id,
-        levelNumber: parseInt(levelNumber) - 1
+        levelNumber: parseInt(levelNumber) - 1,
       },
       select: {
         levelNumber: true,
-        levelTitle: true
-      }
+        levelTitle: true,
+      },
     });
 
     const nextLevel = await prisma.level.findFirst({
       where: {
         roadmapId: roadmap.id,
-        levelNumber: parseInt(levelNumber) + 1
+        levelNumber: parseInt(levelNumber) + 1,
       },
       select: {
         levelNumber: true,
-        levelTitle: true
-      }
+        levelTitle: true,
+      },
     });
 
     const userProgress = level.userProgress[0];
@@ -97,8 +109,8 @@ export async function getLevelData(language, levelNumber) {
       roadmapInfo: {
         language: level.roadmap.language,
         title: level.roadmap.title,
-        description: level.roadmap.description
-      }
+        description: level.roadmap.description,
+      },
     };
   } catch (error) {
     console.error("Error fetching level data:", error);
@@ -114,26 +126,34 @@ export async function getLevelData(language, levelNumber) {
  */
 export async function updateLevelProgress(levelId, progressData) {
   try {
+    console.log("🔍 updateLevelProgress called with:", {
+      levelId,
+      progressData,
+    });
+
     const session = await auth();
     if (!session?.user?.id) {
       throw new Error("User not authenticated");
     }
 
+    console.log("🔍 User ID:", session.user.id);
+
     const { isCompleted, codeSubmitted, xpEarned } = progressData;
+    console.log("🔍 Progress data:", { isCompleted, codeSubmitted, xpEarned });
 
     // Update or create user progress
     const progress = await prisma.userProgress.upsert({
       where: {
         userId_levelId: {
           userId: session.user.id,
-          levelId: levelId
-        }
+          levelId: levelId,
+        },
       },
       update: {
         isCompleted: isCompleted || false,
         completedAt: isCompleted ? new Date() : null,
         codeSubmitted: codeSubmitted || null,
-        xpEarned: xpEarned || 0
+        xpEarned: xpEarned || 0,
       },
       create: {
         userId: session.user.id,
@@ -141,9 +161,11 @@ export async function updateLevelProgress(levelId, progressData) {
         isCompleted: isCompleted || false,
         completedAt: isCompleted ? new Date() : null,
         codeSubmitted: codeSubmitted || null,
-        xpEarned: xpEarned || 0
-      }
+        xpEarned: xpEarned || 0,
+      },
     });
+
+    console.log("✅ Progress updated successfully:", progress);
 
     // Update user's total XP if level is completed
     if (isCompleted && xpEarned > 0) {
@@ -151,9 +173,9 @@ export async function updateLevelProgress(levelId, progressData) {
         where: { id: session.user.id },
         data: {
           totalXp: {
-            increment: xpEarned
-          }
-        }
+            increment: xpEarned,
+          },
+        },
       });
     }
 
