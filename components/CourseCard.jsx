@@ -1,19 +1,41 @@
 "use client";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
+import getData from "@/actions/getData";
 
 const CourseCard = ({ course }) => {
   const { title, lessons, rating, enrolled, duration, lastupdated, src } =
     course || {};
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const handleClick = () => {
-    router.push(`/courses/${title.toLowerCase()}`);
+  const handleClick = async () => {
+    if (!course || !title || loading) return;
+    try {
+      setLoading(true);
+      const language = String(title);
+      console.log("🎯 CourseCard clicked - Language:", language);
+      const response = await getData(language);
+      if (response) {
+        try {
+          localStorage.setItem(
+            `roadmap:${language.toLowerCase()}`,
+            JSON.stringify(response)
+          );
+        } catch (_) {}
+      }
+      router.push(`/courses/${title.toLowerCase()}`);
+    } catch (err) {
+      console.error("Failed to fetch roadmap:", err);
+    } finally {
+      setLoading(false);
+    }
   };
   return (
     <div
       onClick={handleClick}
       className="w-[90%] sm:w-[48%] lg:w-[31%] xl:w-[22%] h-35 rounded-xl border border-slate-700 bg-[#13252d] p-4 text-slate-200 flex flex-col justify-around"
+      role="button"
+      aria-busy={loading}
     >
       <div className="w-full h-[85%]  flex justify-around">
         <div className="w-[80%] h-full">

@@ -14,14 +14,18 @@ model User {
   email         String          @unique
   emailVerified DateTime?
   image         String?
-  passwordHash  String?         // For credentials authentication
-  role          String          @default("user") // user, admin, etc.
+  passwordHash  String?         
+  role          String          @default("user") 
+
+  totalXp       Int             @default(0) // ✅ track overall XP here
 
   accounts      Account[]
   sessions      Session[]
+  roadmaps      UserRoadmap[]
+  progress      UserProgress[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   @@map("users")
 }
@@ -56,7 +60,6 @@ model Session {
   @@map("sessions")
 }
 
- 
 model VerificationToken {
   identifier String
   token      String
@@ -64,4 +67,132 @@ model VerificationToken {
  
   @@unique([identifier, token])
   @@map("verification_tokens")
+}
+
+// Roadmap models for storing GenAI generated learning paths
+model Roadmap {
+  id          String   @id @default(cuid())
+  language    String   @unique
+  title       String   
+  description String?  
+  totalLevels Int      
+
+  levels      Level[]
+  userRoadmaps UserRoadmap[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("roadmaps")
+}
+
+model Level {
+  id          String   @id @default(cuid())
+  roadmapId   String   @map("roadmap_id")
+  levelNumber Int      @map("level_number")
+  levelTitle  String   @map("level_title") 
+  topic       String   
+  difficulty  String   
+  xpReward    Int      @map("xp_reward")
+  textContent String   @map("text_content") @db.Text
+  
+  assignments Assignment[]
+  miniBoss    MiniBoss?
+  bigBoss     BigBoss?
+  userProgress UserProgress[]
+  
+  roadmap     Roadmap  @relation(fields: [roadmapId], references: [id], onDelete: Cascade)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@unique([roadmapId, levelNumber])
+  @@map("levels")
+}
+
+model Assignment {
+  id          String   @id @default(cuid())
+  levelId     String   @map("level_id")
+  title       String
+  description String   @db.Text
+  sampleInput String?  @map("sample_input") @db.Text
+  sampleOutput String? @map("sample_output") @db.Text
+  
+  level       Level    @relation(fields: [levelId], references: [id], onDelete: Cascade)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("assignments")
+}
+
+model MiniBoss {
+  id          String   @id @default(cuid())
+  levelId     String   @unique @map("level_id")
+  title       String
+  description String   @db.Text
+  requirements String[]
+  
+  level       Level    @relation(fields: [levelId], references: [id], onDelete: Cascade)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("mini_bosses")
+}
+
+model BigBoss {
+  id          String   @id @default(cuid())
+  levelId     String   @unique @map("level_id")
+  appearsEvery Int     @map("appears_every")
+  title       String
+  description String   @db.Text
+  requirements String[]
+  
+  level       Level    @relation(fields: [levelId], references: [id], onDelete: Cascade)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("big_bosses")
+}
+
+model UserRoadmap {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  roadmapId String   @map("roadmap_id")
+  isActive  Boolean  @default(true) @map("is_active")
+  startedAt DateTime @default(now()) @map("started_at")
+  
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  roadmap   Roadmap  @relation(fields: [roadmapId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@unique([userId, roadmapId])
+  @@map("user_roadmaps")
+}
+
+model UserProgress {
+  id            String   @id @default(cuid())
+  userId        String   @map("user_id")
+  levelId       String   @map("level_id")
+  isCompleted   Boolean  @default(false) @map("is_completed")
+  completedAt   DateTime? @map("completed_at")
+  xpEarned      Int      @default(0) @map("xp_earned")
+  
+  // ✅ removed totalXp from here (handled at User level)
+  
+  codeSubmitted String?  @map("code_submitted") @db.Text
+  feedback      Json?    
+
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  level         Level    @relation(fields: [levelId], references: [id], onDelete: Cascade)
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  @@unique([userId, levelId])
+  @@map("user_progress")
 }
