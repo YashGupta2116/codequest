@@ -42,6 +42,11 @@ const Navbarblock = () => {
       onClick: () => handleNavigation("/training"),
     },
     {
+      name: "Leaderboard",
+      link: "/leaderboard",
+      onClick: () => handleNavigation("/leaderboard"),
+    },
+    {
       name: "About us",
       link: "/about-us",
       onClick: () => handleNavigation("/about-us"),
