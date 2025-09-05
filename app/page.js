@@ -89,7 +89,6 @@ export default function Homepage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white overflow-hidden relative">
-
       {/* Background Elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-20 left-10 w-72 h-72 bg-purple-500/5 rounded-full blur-3xl"></div>
@@ -98,10 +97,18 @@ export default function Homepage() {
       </div>
 
       {/* Decorative Code Symbols */}
-      <div className="absolute top-16 left-8 text-slate-700/30 text-6xl font-mono">{"< >"}</div>
-      <div className="absolute top-32 right-12 text-slate-700/30 text-7xl font-mono">{"{ }"}</div>
-      <div className="absolute bottom-32 left-16 text-slate-700/30 text-5xl font-mono">{"[ ]"}</div>
-      <div className="absolute bottom-16 right-20 text-slate-700/30 text-7xl font-mono">{"( )"}</div>
+      <div className="absolute top-16 left-8 text-slate-700/30 text-6xl font-mono">
+        {"< >"}
+      </div>
+      <div className="absolute top-32 right-12 text-slate-700/30 text-7xl font-mono">
+        {"{ }"}
+      </div>
+      <div className="absolute bottom-32 left-16 text-slate-700/30 text-5xl font-mono">
+        {"[ ]"}
+      </div>
+      <div className="absolute bottom-16 right-20 text-slate-700/30 text-7xl font-mono">
+        {"( )"}
+      </div>
 
       {/* Main Content */}
       <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-6">
@@ -137,7 +144,8 @@ export default function Homepage() {
 
           {/* Description */}
           <p className="text-lg md:text-xl text-slate-400 mb-12 max-w-2xl mx-auto leading-relaxed">
-            Transform your programming skills through gamified learning, AI-powered challenges, and real-world projects.
+            Transform your programming skills through gamified learning,
+            AI-powered challenges, and real-world projects.
           </p>
 
           {/* CTA Button */}
@@ -155,7 +163,9 @@ export default function Homepage() {
           {/* Stats */}
           <div className="flex flex-wrap justify-center gap-8 mt-16 mb-20">
             <div className="text-center">
-              <div className="text-3xl font-bold text-purple-400 mb-1">50k+</div>
+              <div className="text-3xl font-bold text-purple-400 mb-1">
+                50k+
+              </div>
               <div className="text-sm text-slate-500">Active Learners</div>
             </div>
             <div className="text-center">
@@ -163,7 +173,9 @@ export default function Homepage() {
               <div className="text-sm text-slate-500">Challenges Solved</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-emerald-400 mb-1">95%</div>
+              <div className="text-3xl font-bold text-emerald-400 mb-1">
+                95%
+              </div>
               <div className="text-sm text-slate-500">Success Rate</div>
             </div>
           </div>
@@ -180,7 +192,8 @@ export default function Homepage() {
               ?
             </h2>
             <p className="text-slate-400 text-lg max-w-2xl mx-auto">
-              Experience programming education like never before with our innovative approach
+              Experience programming education like never before with our
+              innovative approach
             </p>
           </div>
 
@@ -217,7 +230,9 @@ export default function Homepage() {
         <div className="mt-32 text-center">
           <div className="inline-flex items-center space-x-2 bg-slate-800/50 backdrop-blur-sm px-6 py-3 rounded-full border border-slate-700/50 mb-8">
             <div className="w-3 h-3 bg-emerald-400 rounded-full animate-pulse"></div>
-            <span className="text-sm text-slate-300">Join thousands of developers worldwide</span>
+            <span className="text-sm text-slate-300">
+              Join thousands of developers worldwide
+            </span>
           </div>
 
           <h3 className="text-2xl md:text-3xl font-bold mb-4">
@@ -229,7 +244,8 @@ export default function Homepage() {
           </h3>
 
           <p className="text-slate-400 mb-8 max-w-md mx-auto">
-            Your coding adventure awaits. Start building, learning, and achieving your goals today.
+            Your coding adventure awaits. Start building, learning, and
+            achieving your goals today.
           </p>
 
           <button
@@ -237,7 +253,9 @@ export default function Homepage() {
             className="inline-flex items-center px-8 py-3 bg-gradient-to-r from-purple-500 to-blue-600 rounded-lg font-semibold hover:scale-105 transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/25"
           >
             <span>Begin Journey</span>
-            <span className="ml-2 group-hover:translate-x-1 transition-transform duration-300">→</span>
+            <span className="ml-2 group-hover:translate-x-1 transition-transform duration-300">
+              →
+            </span>
           </button>
         </div>
       </div>
