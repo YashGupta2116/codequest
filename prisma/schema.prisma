@@ -23,6 +23,7 @@ model User {
   sessions      Session[]
   roadmaps      UserRoadmap[]
   progress      UserProgress[]
+  challenges    UserChallenge[]
 
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
@@ -195,4 +196,49 @@ model UserProgress {
   
   @@unique([userId, levelId])
   @@map("user_progress")
+}
+
+// Challenge models for AI-generated coding challenges
+model Challenge {
+  id            String   @id @default(cuid())
+  title         String
+  description   String   @db.Text
+  language      String
+  difficulty    String
+  inputFormat   String   @map("input_format") @db.Text
+  outputFormat  String   @map("output_format") @db.Text
+  testCases     Json     @map("test_cases")
+  constraints   String?  @db.Text
+  hints         String[] @db.Text
+  estimatedTime String   @map("estimated_time")
+  xpReward      Int      @map("xp_reward")
+  customPrompt  String?  @map("custom_prompt") @db.Text
+  
+  userChallenges UserChallenge[]
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  @@map("challenges")
+}
+
+model UserChallenge {
+  id            String   @id @default(cuid())
+  userId        String   @map("user_id")
+  challengeId   String   @map("challenge_id")
+  status        String   @default("started") // started, completed, abandoned
+  codeSolution  String?  @map("code_solution") @db.Text
+  testResults   Json?    @map("test_results")
+  xpEarned      Int      @default(0) @map("xp_earned")
+  startedAt     DateTime @default(now()) @map("started_at")
+  completedAt   DateTime? @map("completed_at")
+  
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  challenge     Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  @@unique([userId, challengeId])
+  @@map("user_challenges")
 }
