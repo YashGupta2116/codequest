@@ -18,7 +18,12 @@ const LevelPage = ({ params }) => {
 
   // Extract level number from level parameter (e.g., "level-1" -> 1)
   const levelNumber = level.replace("level-", "");
-  console.log('Level parameter:', level, 'Extracted level number:', levelNumber); // Debug log
+  console.log(
+    "Level parameter:",
+    level,
+    "Extracted level number:",
+    levelNumber
+  ); // Debug log
 
   useEffect(() => {
     const fetchLevelData = async () => {
@@ -32,7 +37,7 @@ const LevelPage = ({ params }) => {
         );
         if (storedLevelData) {
           const parsedData = JSON.parse(storedLevelData);
-          console.log('Stored level data:', parsedData); // Debug log
+          console.log("Stored level data:", parsedData); // Debug log
           setLevelData(parsedData);
 
           // Set initial code if user has previous submission
@@ -47,12 +52,14 @@ const LevelPage = ({ params }) => {
         const roadmapData = localStorage.getItem(`roadmap:${course}`);
         if (roadmapData) {
           const parsedRoadmap = JSON.parse(roadmapData);
-          const level = parsedRoadmap.levels?.find(l => l.level_number === parseInt(levelNumber));
-          
+          const level = parsedRoadmap.levels?.find(
+            (l) => l.level_number === parseInt(levelNumber)
+          );
+
           if (level) {
             const userProgress = level.userProgress?.[0];
             const isCompleted = userProgress?.isCompleted || false;
-            
+
             const levelData = {
               ...level,
               level: level.level_number, // Use level_number from backend
@@ -65,14 +72,15 @@ const LevelPage = ({ params }) => {
               roadmapInfo: {
                 language: parsedRoadmap.language || course,
                 title: parsedRoadmap.title || `${course} Roadmap`,
-                description: parsedRoadmap.description || `Learn ${course} step by step`,
+                description:
+                  parsedRoadmap.description || `Learn ${course} step by step`,
               },
               userTotalXp: parsedRoadmap.userTotalXp || 0,
             };
-            
+
             setLevelData(levelData);
-            console.log('Level data set:', levelData); // Debug log
-            
+            console.log("Level data set:", levelData); // Debug log
+
             // Set initial code if user has previous submission
             if (userProgress?.codeSubmitted) {
               setUserCode(userProgress.codeSubmitted);
@@ -101,11 +109,11 @@ const LevelPage = ({ params }) => {
     fetchLevelData();
   }, [course, levelNumber]);
 
-  const handleCodeSubmission = async () => {
-    if (!userCode.trim()) {
+  const handleCodeSubmission = async (validationResult) => {
+    if (!validationResult) {
       setSubmissionResult({
         success: false,
-        message: "Please write some code before submitting!",
+        message: "No validation result received",
       });
       return;
     }
@@ -113,21 +121,37 @@ const LevelPage = ({ params }) => {
     try {
       setIsSubmitting(true);
 
-      // For now, we'll do a simple check - in a real app, you'd want to run the code
-      const isCompleted = userCode.length > 10; // Simple validation
+      const isCompleted = validationResult.success;
       const xpEarned = isCompleted ? levelData.xpReward : 0;
+      const codeSubmitted = validationResult.code || userCode;
 
-      await updateLevelProgress(levelData.id, {
+      // Get the actual level ID from database if not available
+      let levelId = levelData.id;
+      console.log("🔍 Current levelData.id:", levelData.id);
+      console.log("🔍 levelData:", levelData);
+
+      if (!levelId) {
+        console.log("🔍 Fetching level data from database...");
+        // Fetch level data to get the ID
+        const dbLevelData = await getLevelData(course, levelNumber);
+        levelId = dbLevelData.id;
+        console.log("🔍 Fetched levelId:", levelId);
+      }
+
+      console.log("🔍 Final levelId for update:", levelId);
+
+      await updateLevelProgress(levelId, {
         isCompleted,
-        codeSubmitted: userCode,
+        codeSubmitted: codeSubmitted,
         xpEarned,
+        feedback: validationResult,
       });
 
       setSubmissionResult({
         success: isCompleted,
-        message: isCompleted
-          ? `Great job! You earned ${xpEarned} XP!`
-          : "Keep working on your solution!",
+        message: validationResult.message,
+        hint: validationResult.hint,
+        xpEarned: xpEarned,
       });
 
       // Update local state
@@ -262,6 +286,47 @@ const LevelPage = ({ params }) => {
               </div>
             )}
 
+            {/* Submission Result */}
+            {submissionResult && (
+              <div
+                className={`p-4 rounded-lg border ${
+                  submissionResult.success
+                    ? "bg-green-500/10 border-green-500/30"
+                    : "bg-red-500/10 border-red-500/30"
+                }`}
+              >
+                <div className="flex items-center mb-2">
+                  <span
+                    className={`text-sm font-semibold ${
+                      submissionResult.success
+                        ? "text-green-400"
+                        : "text-red-400"
+                    }`}
+                  >
+                    {submissionResult.success
+                      ? "✅ Assignment Completed!"
+                      : "❌ Try Again"}
+                  </span>
+                  {submissionResult.xpEarned > 0 && (
+                    <span className="ml-2 px-2 py-1 bg-blue-500/20 text-blue-400 rounded-full text-xs font-semibold">
+                      +{submissionResult.xpEarned} XP
+                    </span>
+                  )}
+                </div>
+                <p className="text-slate-300 text-sm mb-2">
+                  {submissionResult.message}
+                </p>
+                {submissionResult.hint && (
+                  <div className="text-xs">
+                    <span className="text-slate-400">💡 Hint:</span>
+                    <p className="text-yellow-400 mt-1">
+                      {submissionResult.hint}
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* Mini Boss */}
             {levelData.miniBoss && (
               <div className="bg-purple-500/10 rounded-lg p-4 border border-purple-500/30">
@@ -349,7 +414,12 @@ const LevelPage = ({ params }) => {
 
         {/* Right Panel - Code Runner */}
         <div className="w-[49%] h-[96%] bg-gradient-to-b from-[#1e293b]/80 to-[#0f172a]/80 backdrop-blur-md border border-slate-600/50 rounded-2xl shadow-2xl">
-          <CodeRunner course={course} />
+          <CodeRunner
+            course={course}
+            assignment={levelData.assignments?.[selectedAssignment]}
+            levelTitle={levelData.levelTitle}
+            onValidationResult={handleCodeSubmission}
+          />
         </div>
       </div>
     </div>
