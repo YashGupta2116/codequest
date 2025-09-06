@@ -1,5 +1,6 @@
 "use client";
 
+import { getTotalXp } from "@/actions/getTotalXp";
 import {
   Navbar,
   NavBody,
@@ -11,52 +12,60 @@ import {
   MobileNavToggle,
   MobileNavMenu,
 } from "@/components/ui/resizable-navbar";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const Navbarblock = () => {
   const router = useRouter();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
-  // Navigation handlers
+  const { data: session } = useSession();
+  const fullname = session?.user?.name || "";
+
+  // initials nikalo
+  function getInitials(fullname) {
+    if (!fullname) return "";
+    const parts = fullname.trim().split(" ");
+    const firstInitial = parts[0]?.[0]?.toUpperCase() || "";
+    const lastInitial =
+      parts.length > 1 ? parts[parts.length - 1][0].toUpperCase() : "";
+    return firstInitial + lastInitial;
+  }
+
+  // nav items
   const handleNavigation = (path) => {
     router.push(path);
   };
 
   const navItems = [
-    {
-      name: "Dashboard",
-      link: "/dashboard",
-      onClick: () => handleNavigation("/dashboard"),
-    },
-    {
-      name: "Courses",
-      link: "/courses",
-      onClick: () => handleNavigation("/courses"),
-    },
-    {
-      name: "Training",
-      link: "/training",
-      onClick: () => handleNavigation("/training"),
-    },
-    {
-      name: "Leaderboard",
-      link: "/leaderboard",
-      onClick: () => handleNavigation("/leaderboard"),
-    },
-    {
-      name: "About us",
-      link: "/about-us",
-      onClick: () => handleNavigation("/about-us"),
-    },
+    { name: "Dashboard", link: "/dashboard", onClick: () => handleNavigation("/dashboard") },
+    { name: "Courses", link: "/courses", onClick: () => handleNavigation("/courses") },
+    { name: "Training", link: "/training", onClick: () => handleNavigation("/training") },
+    { name: "Leaderboard", link: "/leaderboard", onClick: () => handleNavigation("/leaderboard") },
+    { name: "About us", link: "/about-us", onClick: () => handleNavigation("/about-us") },
   ];
 
+  // logout
   const handleLogout = async () => {
     await signOut();
     router.push("/signin");
   };
+
+  // xp fetch
+  const [xp, setxp] = useState(0);
+  useEffect(() => {
+    const fetchXp = async () => {
+      try {
+        const points = await getTotalXp();
+        setxp(points);
+      } catch (err) {
+        console.error("Error fetching XP:", err);
+      }
+    };
+    fetchXp();
+  }, []);
 
   return (
     <div className="relative w-full">
@@ -73,16 +82,20 @@ const Navbarblock = () => {
             }}
           />
           <div className="flex items-center gap-4">
-            <NavbarButton variant="secondary">Level-10</NavbarButton>
+            <div
+              className="flex flex-col items-center cursor-pointer"
+              onClick={() => handleNavigation("/dashboard")}
+            >
+              <NavbarButton variant="secondary">Level-{Math.floor(xp / 100)}</NavbarButton>
+              <span className="text-xs text-[#9a9a9a] mt-1">{xp} XP</span>
+            </div>
             <div className="relative">
               <NavbarButton
                 variant="gradient"
-                className={
-                  "rounded-4xl w-9 h-9 flex justify-center items-center"
-                }
+                className="rounded-4xl w-9 h-9 flex justify-center items-center"
                 onClick={() => setIsUserMenuOpen((prev) => !prev)}
               >
-                Al
+                {getInitials(fullname)}
               </NavbarButton>
               {isUserMenuOpen && (
                 <div className="absolute right-0 mt-2 w-44 rounded-md border bg-white shadow-md dark:bg-neutral-900 dark:border-neutral-800 z-50 p-1">
