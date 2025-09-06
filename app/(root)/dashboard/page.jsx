@@ -22,8 +22,8 @@ import { useRouter } from "next/navigation";
 
 const Dashboard = () => {
   const [selectedPath, setSelectedPath] = useState("python");
-  const [streak, setStreak] = useState(5);
- const router = useRouter()
+  const [streak, setStreak] = useState(2);
+const router = useRouter()
   const learningPaths = {
     python: {
       title: "Python Development",
@@ -31,9 +31,9 @@ const Dashboard = () => {
       icon: <SiPython className="text-3xl text-yellow-400" />,
       gradient: "from-yellow-400/20 to-orange-500/20",
       borderGradient: "from-yellow-400/50 to-orange-500/50",
-      progress: 65,
-      level: 5,
-      totalHours: 42,
+      progress: 5,
+      level: 1,
+      totalHours: 1,
       studentsEnrolled: "12.5k",
       difficulty: "Beginner Friendly",
       skillPoints: 2400,
@@ -110,8 +110,8 @@ const Dashboard = () => {
       icon: <SiCplusplus className="text-3xl text-blue-400" />,
       gradient: "from-blue-400/20 to-purple-500/20",
       borderGradient: "from-blue-400/50 to-purple-500/50",
-      progress: 30,
-      level: 3,
+      progress: 2,
+      level: 1,
       totalHours: 56,
       studentsEnrolled: "8.3k",
       difficulty: "Intermediate",
@@ -193,8 +193,8 @@ const Dashboard = () => {
       ),
       gradient: "from-red-500/20 to-orange-500/20",
       borderGradient: "from-red-500/50 to-orange-500/50",
-      progress: 15,
-      level: 2,
+      progress: 3,
+      level: 1,
       totalHours: 64,
       studentsEnrolled: "15.2k",
       difficulty: "Beginner Friendly",
@@ -335,7 +335,7 @@ const Dashboard = () => {
                   <div className="grid grid-cols-2 gap-4">
                     <div className="bg-white/10 backdrop-blur-sm p-6 rounded-2xl border border-white/10">
                       <div className="text-3xl font-bold text-orange-400 mb-1">
-                        42h
+                        12h
                       </div>
                       <div className="text-sm text-gray-300">Hours Learned</div>
                     </div>
@@ -603,7 +603,7 @@ const Dashboard = () => {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="text-center p-4 bg-white/5 rounded-xl border border-white/10">
                     <FaStar className="text-yellow-400 text-2xl mx-auto mb-2" />
-                    <div className="text-lg font-bold">1,247</div>
+                    <div className="text-lg font-bold">1000</div>
                     <div className="text-xs text-gray-400">Skill Points</div>
                   </div>
                   <div className="text-center p-4 bg-white/5 rounded-xl border border-white/10">
