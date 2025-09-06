@@ -29,14 +29,14 @@ const MyRoadmapsPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#0F2027] via-[#2C5364] to-[#2C5364] flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-[#0F2027] via-[#2C5364] to-[#2C5364] flex items-center justify-center pt-20">
         <div className="text-white text-xl">Loading your roadmaps...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0F2027] via-[#2C5364] to-[#2C5364] p-6">
+    <div className="min-h-screen bg-gradient-to-br from-[#0F2027] via-[#2C5364] to-[#2C5364] pt-20 p-6">
       <div className="max-w-6xl mx-auto">
         <h1 className="text-4xl font-bold text-white mb-8">
           My Learning Roadmaps
