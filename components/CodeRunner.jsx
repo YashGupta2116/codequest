@@ -191,28 +191,6 @@ export default function CodeRunner({
     setToasterMessage("");
   }, [title]);
 
-  // For now, simulate run
-  const runCode = async () => {
-    if (!code.trim()) {
-      setOutput("❌ Error: Please write some code first!");
-      return;
-    }
-
-    setRunning(true);
-    setOutput("⏳ Running code...\n");
-
-    setTimeout(() => {
-      setOutput(
-        `✅ Stdout:\n${
-          code.includes("console.log") || code.includes("print")
-            ? "Hello World!"
-            : "Code executed successfully"
-        }\n\nStatus: Success`
-      );
-      setRunning(false);
-    }, 1200);
-  };
-
   // Validate code with Gemini
   const validateCode = async () => {
     if (!code.trim()) {
@@ -273,16 +251,6 @@ export default function CodeRunner({
     <div className="w-full h-full mx-auto p-4">
       {/* Controls */}
       <div className="flex justify-between mb-3">
-        <button
-          onClick={runCode}
-          disabled={running}
-          className={`rounded-xl px-4 py-2 font-medium ${
-            running ? "bg-neutral-700" : "bg-emerald-600 hover:bg-emerald-700"
-          } text-white shadow text-sm`}
-        >
-          {running ? "Running..." : "Run ▶"}
-        </button>
-
         <button
           onClick={validateCode}
           disabled={isValidating || !assignment}
