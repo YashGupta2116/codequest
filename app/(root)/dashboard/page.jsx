@@ -18,11 +18,12 @@ import {
 import { SiPython, SiCplusplus } from "react-icons/si";
 import { RiLineChartLine, RiSparklingFill } from "react-icons/ri";
 import { IoTrendingUp, IoCodeSlash } from "react-icons/io5";
+import { useRouter } from "next/navigation";
 
 const Dashboard = () => {
   const [selectedPath, setSelectedPath] = useState("python");
   const [streak, setStreak] = useState(5);
-
+ const router = useRouter()
   const learningPaths = {
     python: {
       title: "Python Development",
@@ -317,14 +318,14 @@ const Dashboard = () => {
                   </p>
 
                   <div className="flex flex-wrap gap-4">
-                    <button className="group bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-orange-500/25">
+                    <button onClick={()=>{router.push("/courses")}} className="group bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-orange-500/25">
                       <div className="flex items-center space-x-2">
                         <span>Continue Learning</span>
                         <FaArrowRight className="group-hover:translate-x-1 transition-transform" />
                       </div>
                     </button>
 
-                    <button className="px-8 py-4 rounded-xl font-semibold text-lg border-2 border-white/20 hover:border-white/40 transition-all duration-300 hover:bg-white/5">
+                    <button onClick={()=>{router.push("/courses")}} className="px-8 py-4 rounded-xl font-semibold text-lg border-2 border-white/20 hover:border-white/40 transition-all duration-300 hover:bg-white/5">
                       View Progress
                     </button>
                   </div>
@@ -613,42 +614,25 @@ const Dashboard = () => {
                 </div>
               </div>
             </div>
-
-            {/* Weekly Activity */}
-            <div className="bg-white/5 backdrop-blur-md rounded-2xl p-6 border border-white/10 shadow-xl">
-              <h3 className="text-xl font-bold mb-6">Weekly Activity</h3>
-              <div className="space-y-4">
-                {weeklyProgress.map((day, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center justify-between"
-                  >
-                    <span className="text-sm text-gray-300 w-8">{day.day}</span>
-                    <div className="flex-1 mx-3">
-                      <div className="w-full bg-gray-800/50 rounded-full h-2">
-                        <div
-                          className="h-2 rounded-full bg-gradient-to-r from-blue-400 to-purple-500 transition-all duration-500"
-                          style={{ width: `${(day.hours / 5) * 100}%` }}
-                        ></div>
-                      </div>
-                    </div>
-                    <span className="text-sm font-semibold text-gray-300">
-                      {day.hours}h
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
+{/* Quotes Section */}
+<div className="bg-white/5 backdrop-blur-md rounded-2xl p-6 border border-white/10 shadow-xl">
+    <h3 className="text-xl font-bold mb-6">Motivational Quotes</h3>
+    <div className="space-y-4 text-gray-300 italic">
+        <p>“The expert in anything was once a beginner.”</p>
+        <p>“Don’t watch the clock; do what it does. Keep going.”</p>
+        <p>“Every line of code you write makes you better.”</p>
+    </div>
+</div>
 
             {/* Quick Actions */}
             <div className="bg-white/5 backdrop-blur-md rounded-2xl p-6 border border-white/10 shadow-xl">
               <h3 className="text-xl font-bold mb-6">Quick Actions</h3>
               <div className="space-y-3">
-                <button className="w-full text-left p-4 bg-white/5 hover:bg-white/10 rounded-xl transition-all duration-300 border border-white/10 hover:border-white/20">
+                <button onClick={()=>{router.push("/courses")}} className="w-full text-left p-4 bg-white/5 hover:bg-white/10 rounded-xl transition-all duration-300 border border-white/10 hover:border-white/20">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
                       <FaCode className="text-blue-400" />
-                      <span className="font-medium">Practice Problems</span>
+                      <span  className="font-medium">Practice Problems</span>
                     </div>
                     <FaChevronRight className="text-gray-400" />
                   </div>
@@ -664,7 +648,7 @@ const Dashboard = () => {
                   </div>
                 </button>
 
-                <button className="w-full text-left p-4 bg-white/5 hover:bg-white/10 rounded-xl transition-all duration-300 border border-white/10 hover:border-white/20">
+                <button onClick={()=>{router.push("/courses")}} className="w-full text-left p-4 bg-white/5 hover:bg-white/10 rounded-xl transition-all duration-300 border border-white/10 hover:border-white/20">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
                       <RiLineChartLine className="text-purple-400" />
